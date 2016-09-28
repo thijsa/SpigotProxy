@@ -38,7 +38,7 @@ public class SpigotProxy extends JavaPlugin{
 			inject();
 			getLogger().info("Injection successful!");
 		} catch (Exception e) {
-			getLogger().info("Injection netty handler failed! Please make sure you are running 1.10.2");
+			getLogger().info("Injection netty handler failed!");
 			e.printStackTrace();
 		}
 	}
