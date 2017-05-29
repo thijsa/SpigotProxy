@@ -16,12 +16,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spigotmc.SpigotConfig;
 
-public class SpigotProxy extends JavaPlugin{
+public class SpigotProxy extends JavaPlugin {
 	
 	private String channelFieldName;
 	
-	public void onEnable(){
-		if(SpigotConfig.lateBind){
+	public void onLoad(){
+		if (SpigotConfig.lateBind){
 			getLogger().log(Level.SEVERE, "Please disable late-bind in the spigot config in order to make this plugin work");
 			return;
 		}
@@ -30,7 +30,7 @@ public class SpigotProxy extends JavaPlugin{
 		if(channelFieldName == null){
 			getLogger().log(Level.SEVERE, "Unknown server version " + version + ", please see if there are any updates avaible");
 			return;
-		}else{
+		} else {
 			getLogger().info("Detected server version " + version);
 		}
 		try {
@@ -44,7 +44,7 @@ public class SpigotProxy extends JavaPlugin{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void inject() throws Exception{
+	private void inject() throws Exception {
 		Method serverGetHandle = Bukkit.getServer().getClass().getDeclaredMethod("getServer");
 		Object minecraftServer = serverGetHandle.invoke(Bukkit.getServer());
 		
@@ -62,6 +62,7 @@ public class SpigotProxy extends JavaPlugin{
 		for(ChannelFuture channelFuture : channelFutureList) {
 			ChannelPipeline channelPipeline = channelFuture.channel().pipeline();
 			ChannelHandler serverBootstrapAcceptor = channelPipeline.first();
+			System.out.println(serverBootstrapAcceptor.getClass().getName());
 			ChannelInitializer<SocketChannel> oldChildHandler = ReflectionUtils.getPrivateField(serverBootstrapAcceptor.getClass(), serverBootstrapAcceptor, ChannelInitializer.class, "childHandler");
 			ReflectionUtils.setFinalField(serverBootstrapAcceptor.getClass(), serverBootstrapAcceptor, "childHandler", new NettyChannelInitializer(oldChildHandler));
 		}
@@ -70,6 +71,7 @@ public class SpigotProxy extends JavaPlugin{
 	public String getChannelFieldName(String version){
 		String name = null;
 		switch (version){
+			case "v1_11_R1":
 			case "v1_10_R1":
 			case "v1_9_R2":
 			case "v1_9_R1":

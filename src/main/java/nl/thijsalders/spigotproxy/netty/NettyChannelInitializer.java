@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-import net.minecraft.server.v1_10_R1.NetworkManager;
+import net.minecraft.server.v1_11_R1.NetworkManager;
 import nl.thijsalders.spigotproxy.haproxy.HAProxyMessage;
 import nl.thijsalders.spigotproxy.haproxy.HAProxyMessageDecoder;
 
@@ -39,8 +39,8 @@ public class NettyChannelInitializer extends ChannelInitializer<SocketChannel> {
                     String realaddress = message.sourceAddress();
                     int realport = message.sourcePort();
                     
-                    SocketAddress socketaddr = InetSocketAddress.createUnresolved(realaddress, realport);
-                    
+                    SocketAddress socketaddr = new InetSocketAddress(realaddress, realport);
+
                     NetworkManager networkmanager = (NetworkManager) channel.pipeline().get("packet_handler");
             		networkmanager.l = socketaddr;
                 } else {
