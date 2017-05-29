@@ -2,6 +2,4 @@ name: SpigotProxy
 main: nl.thijsalders.spigotproxy.SpigotProxy
 version: 1
 author: thijs_a
-commands:
-  test:
-    description: test
+loadbefore: ["ProtocolLib"]
