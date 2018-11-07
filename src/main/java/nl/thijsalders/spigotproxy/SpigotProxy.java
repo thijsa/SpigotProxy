@@ -14,15 +14,20 @@ import nl.thijsalders.spigotproxy.netty.NettyChannelInitializer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.spigotmc.SpigotConfig;
 
 public class SpigotProxy extends JavaPlugin {
 	
 	private String channelFieldName;
 	
 	public void onLoad(){
-		if (SpigotConfig.lateBind){
-			getLogger().log(Level.SEVERE, "Please disable late-bind in the spigot config in order to make this plugin work");
+		try {
+			Class<?> spigotConfig = Class.forName("org.spigotmc.SpigotConfig");
+			if (spigotConfig.getField("lateBind").getBoolean(spigotConfig)) {
+				getLogger().log(Level.SEVERE, "Please disable late-bind in the spigot config in order to make this plugin work");
+				return;
+			}
+		} catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
 			return;
 		}
 		String version = super.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
@@ -64,7 +69,7 @@ public class SpigotProxy extends JavaPlugin {
 			ChannelHandler serverBootstrapAcceptor = channelPipeline.first();
 			System.out.println(serverBootstrapAcceptor.getClass().getName());
 			ChannelInitializer<SocketChannel> oldChildHandler = ReflectionUtils.getPrivateField(serverBootstrapAcceptor.getClass(), serverBootstrapAcceptor, ChannelInitializer.class, "childHandler");
-			ReflectionUtils.setFinalField(serverBootstrapAcceptor.getClass(), serverBootstrapAcceptor, "childHandler", new NettyChannelInitializer(oldChildHandler));
+			ReflectionUtils.setFinalField(serverBootstrapAcceptor.getClass(), serverBootstrapAcceptor, "childHandler", new NettyChannelInitializer(oldChildHandler, minecraftServer.getClass().getPackage().getName()));
 		}
 	}
 	

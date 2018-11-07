@@ -1,16 +1,13 @@
 package nl.thijsalders.spigotproxy.netty;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-import net.minecraft.server.v1_11_R1.NetworkManager;
 import nl.thijsalders.spigotproxy.haproxy.HAProxyMessage;
 import nl.thijsalders.spigotproxy.haproxy.HAProxyMessageDecoder;
 
@@ -19,11 +16,15 @@ public class NettyChannelInitializer extends ChannelInitializer<SocketChannel> {
 	
 	private ChannelInitializer<SocketChannel> oldChildHandler;
 	private Method oldChildHandlerMethod;
+	private Field addr;
 	
-	public NettyChannelInitializer(ChannelInitializer<SocketChannel> oldChildHandler) throws Exception {
+	public NettyChannelInitializer(ChannelInitializer<SocketChannel> oldChildHandler, String minecraftPackage) throws Exception {
 		this.oldChildHandler = oldChildHandler;
 		this.oldChildHandlerMethod = this.oldChildHandler.getClass().getDeclaredMethod("initChannel", Channel.class);
 		this.oldChildHandlerMethod.setAccessible(true);
+
+		Class<?> networkManager = Class.forName(minecraftPackage + ".NetworkManager");
+		this.addr = networkManager.getField("l");
 	}
 	
 	@Override
@@ -41,8 +42,8 @@ public class NettyChannelInitializer extends ChannelInitializer<SocketChannel> {
                     
                     SocketAddress socketaddr = new InetSocketAddress(realaddress, realport);
 
-                    NetworkManager networkmanager = (NetworkManager) channel.pipeline().get("packet_handler");
-            		networkmanager.l = socketaddr;
+                    ChannelHandler handler = channel.pipeline().get("packet_handler");
+					addr.set(handler, socketaddr);
                 } else {
                     super.channelRead(ctx, msg);
                 }
