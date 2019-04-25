@@ -24,7 +24,11 @@ public class NettyChannelInitializer extends ChannelInitializer<SocketChannel> {
 		this.oldChildHandlerMethod.setAccessible(true);
 
 		Class<?> networkManager = Class.forName(minecraftPackage + ".NetworkManager");
-		this.addr = networkManager.getField("l");
+		try {
+			this.addr = networkManager.getField("socketAddress");
+		} catch (NoSuchFieldException e) {
+			this.addr = networkManager.getField("l");
+		}
 	}
 	
 	@Override
