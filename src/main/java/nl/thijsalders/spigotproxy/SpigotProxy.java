@@ -20,16 +20,6 @@ public class SpigotProxy extends JavaPlugin {
 	private String channelFieldName;
 	
 	public void onLoad(){
-		try {
-			Class<?> spigotConfig = Class.forName("org.spigotmc.SpigotConfig");
-			if (spigotConfig.getField("lateBind").getBoolean(spigotConfig)) {
-				getLogger().log(Level.SEVERE, "Please disable late-bind in the spigot config in order to make this plugin work");
-				return;
-			}
-		} catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-			return;
-		}
 		String version = super.getServer().getClass().getPackage().getName().replace(".",  ",").split(",")[3];
 		channelFieldName = getChannelFieldName(version);
 		if(channelFieldName == null){
@@ -74,7 +64,7 @@ public class SpigotProxy extends JavaPlugin {
 	}
 	
 	public String getChannelFieldName(String version){
-		String name = null;
+		String name = "listeningChannels";
 		switch (version){
 			case "v1_12_R1":
 			case "v1_11_R1":
@@ -85,7 +75,6 @@ public class SpigotProxy extends JavaPlugin {
 			case "v1_8_R3":
 				name = "g";
 				break;
-			case "v1_15_R1":
 			case "v1_14_R1":
 			case "v1_13_R1":
 			case "v1_13_R2":
