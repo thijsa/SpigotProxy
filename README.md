@@ -42,6 +42,10 @@ listen minecraft
 
 In the Spigot server (with late-bind on false), you should see the actual IP of players connecting through HAProxy.
 
+## Other uses:
+- With the [nginx stream module](https://docs.nginx.com/nginx/admin-guide/load-balancer/tcp-udp-load-balancer/) with `proxy_protocol on`.
+- With [infrared](https://github.com/haveachin/infrared), a minecraft focused lightweight reverse proxy written in Go.
+
 ## Note
 
 This plugin is inspired by [/MinelinkNetwork/BungeeProxy](https://github.com/MinelinkNetwork/BungeeProxy). Go to that repo to see the bungee version of this plugin
