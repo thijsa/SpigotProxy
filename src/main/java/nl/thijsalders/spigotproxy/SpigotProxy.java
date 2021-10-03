@@ -55,7 +55,7 @@ public class SpigotProxy extends JavaPlugin {
         for (ChannelFuture channelFuture : channelFutureList) {
             ChannelPipeline channelPipeline = channelFuture.channel().pipeline();
             ChannelHandler serverBootstrapAcceptor = channelPipeline.first();
-            System.out.println(serverBootstrapAcceptor.getClass().getName());
+            Bukkit.getConsoleSender().sendMessage(serverBootstrapAcceptor.getClass().getName());
             ChannelInitializer<SocketChannel> oldChildHandler = ReflectionUtils.getPrivateField(serverBootstrapAcceptor.getClass(), serverBootstrapAcceptor, ChannelInitializer.class, "childHandler");
             ReflectionUtils.setPrivateField(serverBootstrapAcceptor.getClass(), serverBootstrapAcceptor, "childHandler", new NettyChannelInitializer(oldChildHandler, minecraftServer.getClass().getPackage().getName()));
         }
